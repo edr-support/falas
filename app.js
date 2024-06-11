@@ -40,7 +40,7 @@ function initializeLogAnalyzer(keywords) {
             });
 
             // Add hover functionality for timestamp conversion
-            convertTtimestampsOnHover();
+            convertTimestampsOnHover();
         };
         reader.readAsText(file);
     });
