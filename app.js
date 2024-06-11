@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let tabCount = 0;
 
-    // Function to create a new tab and its corresponding content area
+// Function to create a new tab and its corresponding content area
 function createTab() {
     tabCount++;
     let tabId = `tab-${tabCount}`;
@@ -13,6 +13,9 @@ function createTab() {
     content.id = contentId;
     document.body.appendChild(content); // Append content area to the body
 
+    // Show the newly created tab
+    showTab(tabId);
+
     // Create tab
     let tab = document.createElement("div");
     tab.className = "tab";
@@ -22,10 +25,8 @@ function createTab() {
         showTab(tabId);
     });
     document.querySelector(".tabs").appendChild(tab); // Append tab to the .tabs container
-
-    // Show the newly created tab
-    showTab(tabId);
 }
+
 
     // Function to show a specific tab and hide others
     function showTab(tabId) {
