@@ -2,34 +2,30 @@ document.addEventListener("DOMContentLoaded", function() {
     let tabCount = 0;
 
     // Function to create a new tab and its corresponding content area
-    function createTab() {
-        tabCount++;
-        let tabId = `tab-${tabCount}`;
-        let contentId = `content-${tabCount}`;
+function createTab() {
+    tabCount++;
+    let tabId = `tab-${tabCount}`;
+    let contentId = `content-${tabCount}`;
 
-        // Create tab
-        let tab = document.createElement("div");
-        tab.className = "tab";
-        tab.textContent = `Tab ${tabCount}`;
-        tab.setAttribute("data-tab", tabId);
-        tab.addEventListener("click", function() {
-            showTab(tabId);
-        });
-        document.querySelector(".tabs").appendChild(tab);
+    // Create content area
+    let content = document.createElement("div");
+    content.className = "tab-content";
+    content.id = contentId;
+    document.body.appendChild(content); // Append content area to the body
 
-        // Create content area
-        let content = document.createElement("div");
-        content.className = "tab-content";
-        content.id = contentId;
-        document.body.appendChild(content);
-
-        // Add file upload and logs elements to the content area
-        createFileUploadInput(contentId);
-        createLogsContainer(contentId);
-
-        // Show the newly created tab
+    // Create tab
+    let tab = document.createElement("div");
+    tab.className = "tab";
+    tab.textContent = `Tab ${tabCount}`;
+    tab.setAttribute("data-tab", tabId);
+    tab.addEventListener("click", function() {
         showTab(tabId);
-    }
+    });
+    document.querySelector(".tabs").appendChild(tab); // Append tab to the .tabs container
+
+    // Show the newly created tab
+    showTab(tabId);
+}
 
     // Function to show a specific tab and hide others
     function showTab(tabId) {
