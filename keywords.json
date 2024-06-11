@@ -1,0 +1,7 @@
+{
+    "WRN": "Warning: Indicates a potential issue.",
+    "ERR": "Error: Indicates a serious problem.",
+    "INF": "Info: Provides general information.",
+    "DBG": "Debug: Contains debugging information."
+  }
+  

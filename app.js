@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetchAirtableData()
+    fetch('keywords.json')
+        .then(response => response.json())
         .then(keywords => {
             initializeLogAnalyzer(keywords);
         });
@@ -9,26 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
         filterLogs(searchTerm);
     });
 });
-
-async function fetchAirtableData() {
-    const apiKey = 'YOUR_AIRTABLE_API_KEY';
-    const baseId = 'YOUR_AIRTABLE_BASE_ID';
-    const tableName = 'Log Keywords';
-    const url = `https://api.airtable.com/v0/${baseId}/${tableName}`;
-
-    const response = await axios.get(url, {
-        headers: {
-            Authorization: `Bearer ${apiKey}`
-        }
-    });
-
-    const keywords = {};
-    response.data.records.forEach(record => {
-        keywords[record.fields.Keyword] = record.fields.Meaning;
-    });
-
-    return keywords;
-}
 
 function initializeLogAnalyzer(keywords) {
     document.getElementById("file-upload").addEventListener("change", function(event) {
@@ -59,7 +40,7 @@ function initializeLogAnalyzer(keywords) {
             });
 
             // Add hover functionality for timestamp conversion
-            convertTimestampsOnHover();
+            convertTtimestampsOnHover();
         };
         reader.readAsText(file);
     });
