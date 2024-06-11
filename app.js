@@ -35,8 +35,9 @@ function initializeLogAnalyzer(keywords) {
                     let keyword = keywordObj.Keyword;
                     let meaning = keywordObj.Meaning;
                     if (line.includes(keyword)) {
-                        line = line.replace(new RegExp(keyword, 'g'), `<span class="log-${keyword.toLowerCase()}" title="${meaning}">${keyword}</span>`);
-                        hasKeyword = true;
+                        div.classList.add(`log-${keyword.toLowerCase()}`);
+                        div.title = meaning;
+                        hasKeyword = true; // Set to true if keyword is found
                     }
                 });
 
@@ -55,7 +56,7 @@ function initializeLogAnalyzer(keywords) {
         reader.readAsText(file);
     });
 }
-
+        
 function convertTimestampsOnHover() {
     let timestampElements = document.querySelectorAll('.timestamp');
     timestampElements.forEach(element => {
