@@ -1,9 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
     let tabCount = 0;
+
+    // Function to create a new tab and its corresponding content area
     function createTab() {
         tabCount++;
         let tabId = `tab-${tabCount}`;
         let contentId = `content-${tabCount}`;
+
+        // Create tab
+        let tab = document.createElement("div");
+        tab.className = "tab";
+        tab.textContent = `Tab ${tabCount}`;
+        tab.setAttribute("data-tab", tabId);
+        document.querySelector(".tabs").appendChild(tab);
 
         // Create content area
         let content = document.createElement("div");
@@ -11,42 +20,57 @@ document.addEventListener("DOMContentLoaded", function() {
         content.id = contentId;
         document.body.appendChild(content);
 
-        // Show the newly created tab
-        showTab(tabId);
+        // Add file upload and logs elements to the content area
+        createFileUploadInput(contentId);
+        createLogsContainer(contentId);
+    }
 
-        // Create tab
-        let tab = document.createElement("div");
-        tab.className = "tab";
-        tab.textContent = `Tab ${tabCount}`;
-        tab.setAttribute("data-tab", tabId);
-        tab.addEventListener("click", function() {
-            showTab(tabId);
+    // Function to create a file upload input for a tab
+    function createFileUploadInput(containerId) {
+        let fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = `file-upload-${containerId}`;
+        fileInput.addEventListener("change", function() {
+            createTab(); // Create a new tab when a file is uploaded
         });
-        document.querySelector(".tabs").appendChild(tab); // Append tab to the .tabs container
+        document.getElementById(containerId).appendChild(fileInput);
     }
 
-    function showTab(tabId) {
-        let tab = document.querySelector(`[data-tab="${tabId}"]`);
+    // Function to create a logs container for a tab
+    function createLogsContainer(containerId) {
+        let logsContainer = document.createElement("div");
+        logsContainer.id = `logs-${containerId}`;
+        document.getElementById(containerId).appendChild(logsContainer);
+    }
+
+    // Event delegation for handling tab clicks
+    document.querySelector(".tabs").addEventListener("click", function(event) {
+        let tab = event.target.closest(".tab");
         if (tab) {
-            let allTabs = document.querySelectorAll(".tab");
-            let allContents = document.querySelectorAll(".tab-content");
-
-            allTabs.forEach(tab => {
-                tab.classList.remove("active");
-            });
-            allContents.forEach(content => {
-                content.style.display = "none";
-            });
-
-            tab.classList.add("active");
-            document.getElementById(tabId).style.display = "block";
+            let tabId = tab.getAttribute("data-tab");
+            showTab(tabId);
         }
-    }
-    // Initial tab creation
-    document.getElementById("file-upload").addEventListener("change", function(event) {
-        createTab();
     });
+
+    // Initial tab creation
+    createTab();
 });
+
+function showTab(tabId) {
+    let allTabs = document.querySelectorAll(".tab");
+    let allContents = document.querySelectorAll(".tab-content");
+
+    allTabs.forEach(tab => {
+        tab.classList.remove("active");
+    });
+    allContents.forEach(content => {
+        content.style.display = "none";
+    });
+
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
+    document.getElementById(tabId).style.display = "block";
+}
+
 function initializeLogAnalyzer(keywords) {
     document.getElementById("file-upload").addEventListener("change", function(event) {
         let file = event.target.files[0];
