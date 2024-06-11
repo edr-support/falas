@@ -30,22 +30,30 @@ function initializeLogAnalyzer(keywords) {
                 line = convertTimestamps(line);
 
                 // Check for keywords and apply appropriate class
+                let keywordIndices = [];
                 keywords.forEach(keywordObj => {
                     let keyword = keywordObj.Keyword;
                     let meaning = keywordObj.Meaning;
                     let index = line.indexOf(keyword);
                     if (index !== -1) {
-                        let beforeKeyword = line.substring(0, index);
-                        let afterKeyword = line.substring(index + keyword.length);
-                        div.innerHTML += escapeHTML(beforeKeyword); // Escape HTML to prevent XSS
-                        let span = document.createElement('span');
-                        span.className = `log-${keyword.toLowerCase()}`;
-                        span.title = meaning;
-                        span.textContent = keyword;
-                        div.appendChild(span);
-                        div.innerHTML += escapeHTML(afterKeyword); // Escape HTML to prevent XSS
+                        keywordIndices.push({ index, keyword, meaning });
                     }
                 });
+
+                let index = 0;
+                for (let i = 0; i < keywordIndices.length; i++) {
+                    let keywordObj = keywordIndices[i];
+                    let beforeKeyword = line.substring(index, keywordObj.index);
+                    let afterKeyword = line.substring(keywordObj.index + keywordObj.keyword.length);
+                    div.innerHTML += escapeHTML(beforeKeyword); // Escape HTML to prevent XSS
+                    let span = document.createElement('span');
+                    span.className = `log-${keywordObj.keyword.toLowerCase()}`;
+                    span.title = keywordObj.meaning;
+                    span.textContent = keywordObj.keyword;
+                    div.appendChild(span);
+                    index = keywordObj.index + keywordObj.keyword.length;
+                    div.innerHTML += escapeHTML(afterKeyword); // Escape HTML to prevent XSS
+                }
 
                 logsElement.appendChild(div);
             });
