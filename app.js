@@ -1,75 +1,15 @@
-document.addEventListener("DOMContentLoaded", function() {
-    let tabCount = 0;
-
-    // Function to create a new tab and its corresponding content area
-    function createTab() {
-        tabCount++;
-        let tabId = `tab-${tabCount}`;
-        let contentId = `content-${tabCount}`;
-
-        // Create tab
-        let tab = document.createElement("div");
-        tab.className = "tab";
-        tab.textContent = `Tab ${tabCount}`;
-        tab.setAttribute("data-tab", tabId);
-        document.querySelector(".tabs").appendChild(tab);
-
-        // Create content area
-        let content = document.createElement("div");
-        content.className = "tab-content";
-        content.id = contentId;
-        document.body.appendChild(content);
-
-        // Add file upload and logs elements to the content area
-        createFileUploadInput(contentId);
-        createLogsContainer(contentId);
-    }
-
-    // Function to create a file upload input for a tab
-    function createFileUploadInput(containerId) {
-        let fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.id = `file-upload-${containerId}`;
-        fileInput.addEventListener("change", function() {
-            createTab(); // Create a new tab when a file is uploaded
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('keywords.json')
+        .then(response => response.json())
+        .then(keywords => {
+            initializeLogAnalyzer(keywords);
         });
-        document.getElementById(containerId).appendChild(fileInput);
-    }
 
-    // Function to create a logs container for a tab
-    function createLogsContainer(containerId) {
-        let logsContainer = document.createElement("div");
-        logsContainer.id = `logs-${containerId}`;
-        document.getElementById(containerId).appendChild(logsContainer);
-    }
-
-    // Event delegation for handling tab clicks
-    document.querySelector(".tabs").addEventListener("click", function(event) {
-        let tab = event.target.closest(".tab");
-        if (tab) {
-            let tabId = tab.getAttribute("data-tab");
-            showTab(tabId);
-        }
+    document.getElementById('search').addEventListener('input', function() {
+        let searchTerm = this.value.toLowerCase();
+        filterLogs(searchTerm);
     });
-
-    // Initial tab creation
-    createTab();
 });
-
-function showTab(tabId) {
-    let allTabs = document.querySelectorAll(".tab");
-    let allContents = document.querySelectorAll(".tab-content");
-
-    allTabs.forEach(tab => {
-        tab.classList.remove("active");
-    });
-    allContents.forEach(content => {
-        content.style.display = "none";
-    });
-
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
-    document.getElementById(tabId).style.display = "block";
-}
 
 function initializeLogAnalyzer(keywords) {
     document.getElementById("file-upload").addEventListener("change", function(event) {
@@ -89,8 +29,22 @@ function initializeLogAnalyzer(keywords) {
                 // Convert timestamps in the line
                 line = convertTimestamps(line);
 
-                // Highlight log levels
-                highlightLogLevels(line, div);
+                // Check for keywords and apply appropriate class
+                let hasKeyword = false;
+                keywords.forEach(keywordObj => {
+                    let keyword = keywordObj.Keyword;
+                    let meaning = keywordObj.Meaning;
+                    if (line.includes(keyword)) {
+                        div.classList.add(`log-${keyword.toLowerCase()}`);
+                        div.title = meaning;
+                        hasKeyword = true; // Set to true if keyword is found
+                    }
+                });
+
+                // If no keyword found, set default class
+                if (!hasKeyword) {
+                    div.classList.add('log-default');
+                }
 
                 div.innerHTML = line;
                 logsElement.appendChild(div);
@@ -101,20 +55,6 @@ function initializeLogAnalyzer(keywords) {
         };
         reader.readAsText(file);
     });
-}
-
-function highlightLogLevels(line, div) {
-    if (line.includes('WRN')) {
-        div.classList.add('log-warning');
-    } else if (line.includes('ERR')) {
-        div.classList.add('log-error');
-    } else if (line.includes('INF')) {
-        div.classList.add('log-info');
-    } else if (line.includes('DBG')) {
-        div.classList.add('log-debug');
-    } else {
-        div.classList.add('log-default');
-    }
 }
         
 function convertTimestampsOnHover() {
