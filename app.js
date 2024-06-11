@@ -1,14 +1,72 @@
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('keywords.json')
-        .then(response => response.json())
-        .then(keywords => {
-            initializeLogAnalyzer(keywords);
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize an empty array to store file inputs and logs for each tab
+    let tabs = [];
+
+    // Function to create a new tab and its corresponding content area
+    function createTab() {
+        // Create a unique ID for the tab and its content area
+        let tabId = `tab-${tabs.length + 1}`;
+        let logId = `logs-${tabs.length + 1}`;
+
+        // Create tab HTML
+        let tab = document.createElement("div");
+        tab.className = "tab";
+        tab.textContent = `Log ${tabs.length + 1}`;
+        tab.setAttribute("data-tab", tabId);
+        tab.addEventListener("click", function() {
+            showTab(tabId);
         });
 
-    document.getElementById('search').addEventListener('input', function() {
-        let searchTerm = this.value.toLowerCase();
-        filterLogs(searchTerm);
-    });
+        // Create content area HTML
+        let content = document.createElement("div");
+        content.className = "tab-content";
+        content.id = logId;
+
+        // Append tab and content area to the DOM
+        document.querySelector(".tabs").appendChild(tab);
+        document.body.appendChild(content);
+
+        // Add the file upload input and logs container for this tab
+        createFileUploadInput(logId);
+        createLogsContainer(logId);
+
+        // Show the newly created tab
+        showTab(tabId);
+    }
+
+    // Function to show a specific tab and hide others
+    function showTab(tabId) {
+        let allTabs = document.querySelectorAll(".tab");
+        let allContents = document.querySelectorAll(".tab-content");
+
+        allTabs.forEach(tab => {
+            tab.classList.remove("active");
+        });
+        allContents.forEach(content => {
+            content.style.display = "none";
+        });
+
+        document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
+        document.getElementById(tabId).style.display = "block";
+    }
+
+    // Function to create a file upload input for a tab
+    function createFileUploadInput(containerId) {
+        let fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = `file-upload-${containerId}`;
+        document.getElementById(containerId).appendChild(fileInput);
+    }
+
+    // Function to create a logs container for a tab
+    function createLogsContainer(containerId) {
+        let logsContainer = document.createElement("div");
+        logsContainer.id = `logs-${containerId}`;
+        document.getElementById(containerId).appendChild(logsContainer);
+    }
+
+    // Add event listener to create a new tab when the page loads
+    createTab();
 });
 
 function initializeLogAnalyzer(keywords) {
