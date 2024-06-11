@@ -30,42 +30,55 @@ function initializeLogAnalyzer(keywords) {
                 line = convertTimestamps(line);
 
                 // Check for keywords and apply appropriate class
-                let keywordIndices = [];
-                if (Array.isArray(keywords)) {
-                    keywords.forEach(keywordObj => {
-                        let keyword = keywordObj.Keyword;
-                        let meaning = keywordObj.Meaning;
-                        let index = line.indexOf(keyword);
-                        if (index !== -1) {
-                            keywordIndices.push({ index, keyword, meaning });
-                        }
-                    });
+                let hasKeyword = false;
+                keywords.forEach(keywordObj => {
+                    let keyword = keywordObj.Keyword;
+                    let meaning = keywordObj.Meaning;
+                    if (line.includes(keyword)) {
+                        line = line.replace(new RegExp(keyword, 'g'), `<span class="log-${keyword.toLowerCase()}" title="${meaning}">${keyword}</span>`);
+                        hasKeyword = true;
+                    }
+                });
+
+                // If no keyword found, set default class
+                if (!hasKeyword) {
+                    div.classList.add('log-default');
                 }
 
-                let index = 0;
-                for (let i = 0; i < keywordIndices.length; i++) {
-                    let keywordObj = keywordIndices[i];
-                    let beforeKeyword = line.substring(index, keywordObj.index);
-                    let afterKeyword = line.substring(keywordObj.index + keywordObj.keyword.length);
-                    div.innerHTML += escapeHTML(beforeKeyword); // Escape HTML to prevent XSS
-                    let span = document.createElement('span');
-                    span.className = `log-${keywordObj.keyword.toLowerCase()}`;
-                    span.title = keywordObj.meaning;
-                    span.textContent = keywordObj.keyword;
-                    div.appendChild(span);
-                    index = keywordObj.index + keywordObj.keyword.length;
-                    div.innerHTML += escapeHTML(afterKeyword); // Escape HTML to prevent XSS
-                }
-
+                div.innerHTML = line;
                 logsElement.appendChild(div);
             });
 
-            // Add hover functionality for tooltips
-            addTooltipHover();
+            // Add hover functionality for timestamp conversion
+            convertTimestampsOnHover();
         };
         reader.readAsText(file);
     });
 }
+
+function convertTimestampsOnHover() {
+    let timestampElements = document.querySelectorAll('.timestamp');
+    timestampElements.forEach(element => {
+        element.addEventListener("mouseover", function() {
+            let utcTimestamp = element.getAttribute("data-utc");
+            let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
+            element.textContent = localTimestamp;
+        });
+
+        element.addEventListener("mouseout", function() {
+            let utcTimestamp = element.getAttribute("data-utc");
+            element.textContent = utcTimestamp;
+        });
+    });
+}
+
+function convertTimestamps(line) {
+    let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
+    return line.replace(regex, match => {
+        return `<span class="timestamp" data-utc="${match}">${match}</span>`;
+    });
+}
+
 
 function escapeHTML(html) {
     return html.replace(/&/g, "&amp;")
@@ -88,29 +101,6 @@ function addTooltipHover() {
             hideTooltip();
         });
     });
-}
-
-function convertTimestamps(line) {
-    let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
-    return line.replace(regex, match => {
-        return `<span class="timestamp" data-utc="${match}">${match}</span>`;
-    });
-}
-
-function convertTimestampsOnHover() {
-    let timestampElements = document.getElementsByClassName("timestamp");
-    for (let element of timestampElements) {
-        element.addEventListener("mouseover", function() {
-            let utcTimestamp = element.getAttribute("data-utc");
-            let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
-            element.textContent = localTimestamp;
-        });
-
-        element.addEventListener("mouseout", function() {
-            let utcTimestamp = element.getAttribute("data-utc");
-            element.textContent = utcTimestamp;
-        });
-    }
 }
 
 function filterLogs(searchTerm) {
