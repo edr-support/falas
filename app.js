@@ -29,22 +29,8 @@ function initializeLogAnalyzer(keywords) {
                 // Convert timestamps in the line
                 line = convertTimestamps(line);
 
-                // Check for keywords and apply appropriate class
-                let hasKeyword = false;
-                keywords.forEach(keywordObj => {
-                    let keyword = keywordObj.Keyword;
-                    let meaning = keywordObj.Meaning;
-                    if (line.includes(keyword)) {
-                        div.classList.add(`log-${keyword.toLowerCase()}`);
-                        div.title = meaning;
-                        hasKeyword = true; // Set to true if keyword is found
-                    }
-                });
-
-                // If no keyword found, set default class
-                if (!hasKeyword) {
-                    div.classList.add('log-default');
-                }
+                // Highlight log levels
+                highlightLogLevels(line, div);
 
                 div.innerHTML = line;
                 logsElement.appendChild(div);
@@ -55,6 +41,20 @@ function initializeLogAnalyzer(keywords) {
         };
         reader.readAsText(file);
     });
+}
+
+function highlightLogLevels(line, div) {
+    if (line.includes('WRN')) {
+        div.classList.add('log-warning');
+    } else if (line.includes('ERR')) {
+        div.classList.add('log-error');
+    } else if (line.includes('INF')) {
+        div.classList.add('log-info');
+    } else if (line.includes('DBG')) {
+        div.classList.add('log-debug');
+    } else {
+        div.classList.add('log-default');
+    }
 }
         
 function convertTimestampsOnHover() {
