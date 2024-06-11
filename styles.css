@@ -1,0 +1,24 @@
+/* CSS for logdanger class */
+.log-danger {
+    color: #920000;
+}
+
+/* CSS for loggood class */
+.log-good {
+    color: #2fe42f;
+}
+
+/* CSS for loginfo class */
+.log-info {
+    color: #1e1ed8;
+}
+
+/* Respect the format of the original log file */
+.log-container {
+    white-space: pre-wrap;
+}
+
+/* Gray background */
+body {
+    background-color: #f0f0f0; /* Light gray background */
+}
