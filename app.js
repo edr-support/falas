@@ -1,71 +1,52 @@
 document.addEventListener("DOMContentLoaded", function() {
     let tabCount = 0;
+    function createTab() {
+        tabCount++;
+        let tabId = `tab-${tabCount}`;
+        let contentId = `content-${tabCount}`;
 
-// Function to create a new tab and its corresponding content area
-function createTab() {
-    tabCount++;
-    let tabId = `tab-${tabCount}`;
-    let contentId = `content-${tabCount}`;
+        // Create content area
+        let content = document.createElement("div");
+        content.className = "tab-content";
+        content.id = contentId;
+        document.body.appendChild(content);
 
-    // Create content area
-    let content = document.createElement("div");
-    content.className = "tab-content";
-    content.id = contentId;
-    document.body.appendChild(content); // Append content area to the body
-
-    // Show the newly created tab
-    showTab(tabId);
-
-    // Create tab
-    let tab = document.createElement("div");
-    tab.className = "tab";
-    tab.textContent = `Tab ${tabCount}`;
-    tab.setAttribute("data-tab", tabId);
-    tab.addEventListener("click", function() {
+        // Show the newly created tab
         showTab(tabId);
-    });
-    document.querySelector(".tabs").appendChild(tab); // Append tab to the .tabs container
-}
 
+        // Create tab
+        let tab = document.createElement("div");
+        tab.className = "tab";
+        tab.textContent = `Tab ${tabCount}`;
+        tab.setAttribute("data-tab", tabId);
+        tab.addEventListener("click", function() {
+            showTab(tabId);
+        });
+        document.querySelector(".tabs").appendChild(tab); // Append tab to the .tabs container
+    }
 
-    // Function to show a specific tab and hide others
     function showTab(tabId) {
-        let allTabs = document.querySelectorAll(".tab");
-        let allContents = document.querySelectorAll(".tab-content");
+        let tab = document.querySelector(`[data-tab="${tabId}"]`);
+        if (tab) {
+            let allTabs = document.querySelectorAll(".tab");
+            let allContents = document.querySelectorAll(".tab-content");
 
-        allTabs.forEach(tab => {
-            tab.classList.remove("active");
-        });
-        allContents.forEach(content => {
-            content.style.display = "none";
-        });
+            allTabs.forEach(tab => {
+                tab.classList.remove("active");
+            });
+            allContents.forEach(content => {
+                content.style.display = "none";
+            });
 
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
-        document.getElementById(tabId).style.display = "block";
+            tab.classList.add("active");
+            document.getElementById(tabId).style.display = "block";
+        }
     }
-
-    // Function to create a file upload input for a tab
-    function createFileUploadInput(containerId) {
-        let fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.id = `file-upload-${containerId}`;
-        fileInput.addEventListener("change", function() {
-            createTab(); // Create a new tab when a file is uploaded
-        });
-        document.getElementById(containerId).appendChild(fileInput);
-    }
-
-    // Function to create a logs container for a tab
-    function createLogsContainer(containerId) {
-        let logsContainer = document.createElement("div");
-        logsContainer.id = `logs-${containerId}`;
-        document.getElementById(containerId).appendChild(logsContainer);
-    }
-
     // Initial tab creation
-    createTab();
+    document.getElementById("file-upload").addEventListener("change", function(event) {
+        createTab();
+    });
 });
-
 function initializeLogAnalyzer(keywords) {
     document.getElementById("file-upload").addEventListener("change", function(event) {
         let file = event.target.files[0];
