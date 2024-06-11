@@ -1,34 +1,31 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize an empty array to store file inputs and logs for each tab
-    let tabs = [];
+    let tabCount = 0;
 
     // Function to create a new tab and its corresponding content area
     function createTab() {
-        // Create a unique ID for the tab and its content area
-        let tabId = `tab-${tabs.length + 1}`;
-        let logId = `logs-${tabs.length + 1}`;
+        tabCount++;
+        let tabId = `tab-${tabCount}`;
+        let contentId = `content-${tabCount}`;
 
-        // Create tab HTML
+        // Create tab
         let tab = document.createElement("div");
         tab.className = "tab";
-        tab.textContent = `Log ${tabs.length + 1}`;
+        tab.textContent = `Tab ${tabCount}`;
         tab.setAttribute("data-tab", tabId);
         tab.addEventListener("click", function() {
             showTab(tabId);
         });
+        document.querySelector(".tabs").appendChild(tab);
 
-        // Create content area HTML
+        // Create content area
         let content = document.createElement("div");
         content.className = "tab-content";
-        content.id = logId;
-
-        // Append tab and content area to the DOM
-        document.querySelector(".tabs").appendChild(tab);
+        content.id = contentId;
         document.body.appendChild(content);
 
-        // Add the file upload input and logs container for this tab
-        createFileUploadInput(logId);
-        createLogsContainer(logId);
+        // Add file upload and logs elements to the content area
+        createFileUploadInput(contentId);
+        createLogsContainer(contentId);
 
         // Show the newly created tab
         showTab(tabId);
@@ -55,6 +52,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.id = `file-upload-${containerId}`;
+        fileInput.addEventListener("change", function() {
+            createTab(); // Create a new tab when a file is uploaded
+        });
         document.getElementById(containerId).appendChild(fileInput);
     }
 
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById(containerId).appendChild(logsContainer);
     }
 
-    // Add event listener to create a new tab when the page loads
+    // Initial tab creation
     createTab();
 });
 

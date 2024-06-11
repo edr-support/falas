@@ -31,3 +31,21 @@ body {
 .log-default {
     color: #000000; /* Black color for lines without keywords */
 }
+.tabs {
+    display: flex;
+}
+
+.tab {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    background-color: #f0f0f0;
+}
+
+.tab-content {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+}
