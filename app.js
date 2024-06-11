@@ -31,14 +31,16 @@ function initializeLogAnalyzer(keywords) {
 
                 // Check for keywords and apply appropriate class
                 let keywordIndices = [];
-                keywords.forEach(keywordObj => {
-                    let keyword = keywordObj.Keyword;
-                    let meaning = keywordObj.Meaning;
-                    let index = line.indexOf(keyword);
-                    if (index !== -1) {
-                        keywordIndices.push({ index, keyword, meaning });
-                    }
-                });
+                if (Array.isArray(keywords)) {
+                    keywords.forEach(keywordObj => {
+                        let keyword = keywordObj.Keyword;
+                        let meaning = keywordObj.Meaning;
+                        let index = line.indexOf(keyword);
+                        if (index !== -1) {
+                            keywordIndices.push({ index, keyword, meaning });
+                        }
+                    });
+                }
 
                 let index = 0;
                 for (let i = 0; i < keywordIndices.length; i++) {
