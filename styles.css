@@ -1,16 +1,21 @@
-/* CSS for logdanger class */
-.log-danger {
-    color: #920000;
+/* CSS for log-warning class */
+.log-warning {
+    color: orange;
 }
 
-/* CSS for loggood class */
-.log-good {
-    color: #2fe42f;
+/* CSS for log-error class */
+.log-error {
+    color: red;
 }
 
-/* CSS for loginfo class */
+/* CSS for log-info class */
 .log-info {
-    color: #1e1ed8;
+    color: blue;
+}
+
+/* CSS for log-debug class */
+.log-debug {
+    color: purple;
 }
 
 /* Respect the format of the original log file */
