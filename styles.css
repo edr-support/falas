@@ -1,51 +1,42 @@
-/* CSS for log-warning class */
+.tab {
+    display: inline-block;
+    padding: 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.tab.active {
+    background-color: #ccc;
+}
+
+.tooltip {
+    position: absolute;
+    background: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
 .log-warning {
     color: orange;
 }
 
-/* CSS for log-error class */
 .log-error {
     color: red;
 }
 
-/* CSS for log-info class */
 .log-info {
     color: blue;
 }
 
-/* CSS for log-debug class */
 .log-debug {
     color: purple;
 }
 
-/* Respect the format of the original log file */
-.log-container {
-    white-space: pre-wrap;
-}
-
-/* Gray background */
-body {
-    background-color: #f0f0f0; /* Light gray background */
-}
-/* CSS for default class */
-.log-default {
-    color: #000000; /* Black color for lines without keywords */
-}
-.tabs {
-    display: flex;
-}
-
-.tab {
-    padding: 10px;
+.timestamp {
     cursor: pointer;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    background-color: #f0f0f0;
-}
-
-.tab-content {
-    display: none;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background-color: #fff;
 }
