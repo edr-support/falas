@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function() {
         let session = editor.session;
 
         // Remove existing markers
-        session.clearAnnotations();
-        session.getMarkers(true).forEach(marker => {
-            session.removeMarker(marker.id);
-        });
+        let markers = session.getMarkers(true);
+        for (let markerId in markers) {
+            session.removeMarker(markerId);
+        }
 
         // Define styles and patterns
         let ranges = [
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
             while ((match = pattern.exec(session.getValue())) !== null) {
                 let startPos = match.index;
                 let endPos = match.index + match[0].length;
-                session.addMarker(new Range(0, startPos, 0, endPos), style, "text");
+                session.addMarker(new Ace.Range(0, startPos, 0, endPos), style, "text");
             }
         });
     }
@@ -135,3 +135,4 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+
