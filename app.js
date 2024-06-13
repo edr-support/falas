@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             highlightLogLevels(line, div);
 
             // Highlight keywords and add tooltips
-            line = highlightKeywords(line, div, keywords);
+            highlightKeywords(line, div, keywords);
 
             div.innerHTML = line;
             logContainer.appendChild(div);
