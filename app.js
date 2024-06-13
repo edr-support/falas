@@ -163,7 +163,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    let timestampElements = document.querySelectorAll('.timestamp');
+    timestampElements.forEach(element => {
+        element.addEventListener("mouseover", function() {
+            let utcTimestamp = element.getAttribute("data-utc");
+            let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
+            element.textContent = localTimestamp;
+        });
 
+        element.addEventListener("mouseout", function() {
+            let utcTimestamp = element.getAttribute("data-utc");
+            element.textContent = utcTimestamp;
+        });
+    });
     function showTooltip(text) {
         let tooltip = document.getElementById('tooltip');
         tooltip.textContent = text;
