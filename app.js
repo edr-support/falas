@@ -119,11 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function highlightKeywords(line, div, keywords) {
         keywords.forEach(keyword => {
             let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
-            line = line.replace(regex, '<span class="keyword" title="' + keyword + '">' + keyword + '</span>');
+            line = line.replace(regex, `<span class="keyword">${keyword}</span>`);
         });
-        return line;
+        div.innerHTML = line;
     }
-
+    
     function convertTimestamps(line) {
         let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
         return line.replace(regex, match => {
