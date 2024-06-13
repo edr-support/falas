@@ -53,9 +53,21 @@ h1 {
     width: 300px;
 }
 
-#tabs, #logs-container {
-    margin-top: 20px;
+.tab {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    margin-right: 5px;
 }
+
+.tab.active {
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+
 
 .line {
     padding: 5px 0;

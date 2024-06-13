@@ -92,8 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Highlight log levels
             highlightLogLevels(line, div);
 
-            // Highlight keywords
-            highlightKeywords(line, div, keywords);
+            // Highlight keywords and add tooltips
+            line = highlightKeywords(line, div, keywords);
 
             div.innerHTML = line;
             logContainer.appendChild(div);
@@ -121,9 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function highlightKeywords(line, div, keywords) {
         keywords.forEach(keyword => {
             let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
-            line = line.replace(regex, `<span class="keyword">${keyword}</span>`);
+            line = line.replace(regex, `<span class="keyword" title="${keyword}">${keyword}</span>`);
         });
-        div.innerHTML = line;
+        return line;
     }
 
     function convertTimestamps(line) {
@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addTooltipHover() {
-        let keywordElements = document.querySelectorAll('.line span');
+    function addKeywordTooltips() {
+        let keywordElements = document.querySelectorAll('.keyword');
         keywordElements.forEach(element => {
             element.addEventListener('mouseover', function() {
                 let tooltipText = this.getAttribute('title');
@@ -163,7 +163,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
+    function showTooltip(text) {
+        let tooltip = document.getElementById('tooltip');
+        tooltip.textContent = text;
+        tooltip.style.display = 'block';
+    }
+
+    function hideTooltip() {
+        let tooltip = document.getElementById('tooltip');
+        tooltip.style.display = 'none';
+    }
+
     function filterLogs(searchTerm) {
         let logLines = document.getElementsByClassName('line');
         for (let line of logLines) {
