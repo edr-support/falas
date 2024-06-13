@@ -1,24 +1,22 @@
 .tab {
     display: inline-block;
     padding: 10px;
-    margin-right: 5px;
     cursor: pointer;
-    background-color: #eee;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    background-color: #f0f0f0;
+    margin-right: 5px;
 }
 
 .tab.active {
     background-color: #ccc;
 }
 
-.tooltip {
-    position: absolute;
-    background: #333;
-    color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1000;
+.logs-container {
+    margin-top: 10px;
+}
+
+.line {
+    margin-bottom: 5px;
 }
 
 .log-warning {
@@ -34,9 +32,20 @@
 }
 
 .log-debug {
-    color: purple;
+    color: green;
 }
 
 .timestamp {
-    cursor: pointer;
+    font-style: italic;
+    color: gray;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    display: none;
+    z-index: 9999;
 }

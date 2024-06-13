@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FALAS</title>
+    <title>Log Analyzer with Tabs</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/gif" href="on-fire.gif">
 </head>
 <body>
-    <input type="file" id="file-upload" multiple />
+    <input type="file" id="file-upload" multiple>
     <div id="tabs"></div>
-    <div id="editor" style="height: 750px; width: 100%;"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <div class="logs-container" id="logs-container"></div>
+    <div class="tooltip" id="tooltip"></div>
     <script src="app.js"></script>
 </body>
 </html>

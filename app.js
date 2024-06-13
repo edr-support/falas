@@ -1,23 +1,35 @@
-document.addEventListener("DOMContentLoaded", function() {
-    let editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/html");
+document.addEventListener('DOMContentLoaded', function() {
+    let tabsContainer = document.getElementById('tabs');
+    let logsContainer = document.getElementById('logs-container');
 
-    document.getElementById("file-upload").addEventListener("change", function(event) {
-        let files = event.target.files;
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
-            let reader = new FileReader();
-            reader.onload = function(event) {
-                let logText = event.target.result;
-                createTab(file.name, logText);
-            };
-            reader.readAsText(file);
-        }
+    fetch('keywords.json')
+        .then(response => response.json())
+        .then(keywords => {
+            initializeLogAnalyzer(keywords);
+        });
+
+    document.getElementById('search').addEventListener('input', function() {
+        let searchTerm = this.value.toLowerCase();
+        filterLogs(searchTerm);
     });
 
-    function createTab(filename, logText) {
-        let tabCount = document.querySelectorAll('.tab').length + 1;
+    function initializeLogAnalyzer(keywords) {
+        document.getElementById("file-upload").addEventListener("change", function(event) {
+            let files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    let logText = event.target.result;
+                    createTab(file.name, logText, keywords);
+                };
+                reader.readAsText(file);
+            }
+        });
+    }
+
+    function createTab(filename, logText, keywords) {
+        let tabCount = tabsContainer.querySelectorAll('.tab').length + 1;
         let tabId = `tab-${tabCount}`;
         let contentId = `content-${tabCount}`;
 
@@ -27,60 +39,120 @@ document.addEventListener("DOMContentLoaded", function() {
         tab.textContent = filename;
         tab.setAttribute("data-tab", tabId);
         tab.addEventListener("click", function() {
-            showTab(tabId, logText);
+            showTab(tabId);
         });
-        document.getElementById("tabs").appendChild(tab);
+        tabsContainer.appendChild(tab);
 
-        // Show the newly created tab
-        showTab(tabId, logText);
+        // Create log container for the tab
+        let logContainer = document.createElement("div");
+        logContainer.id = contentId;
+        logContainer.classList.add("logs");
+        logsContainer.appendChild(logContainer);
+
+        // Display the newly created tab
+        showTab(tabId);
+
+        // Parse and display log text
+        displayLogs(logText, contentId, keywords);
     }
 
-    function showTab(tabId, logText) {
-        let allTabs = document.querySelectorAll(".tab");
+    function showTab(tabId) {
+        let allTabs = tabsContainer.querySelectorAll(".tab");
         allTabs.forEach(tab => tab.classList.remove("active"));
 
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
+        let selectedTab = document.querySelector(`[data-tab="${tabId}"]`);
+        if (selectedTab) {
+            selectedTab.classList.add("active");
+        }
 
-        editor.session.setValue(logText);
-        applyStyles();
+        // Hide all log containers
+        let allLogContainers = logsContainer.querySelectorAll(".logs");
+        allLogContainers.forEach(container => container.style.display = "none");
+
+        // Show the corresponding log container
+        let logContainer = document.getElementById(`content-${tabId.replace("tab-", "")}`);
+        if (logContainer) {
+            logContainer.style.display = "block";
+        }
+    }
+
+    function displayLogs(logText, containerId, keywords) {
+        let logLines = logText.split('\n');
+        let logContainer = document.getElementById(containerId);
+        logContainer.innerHTML = '';
+
+        logLines.forEach(line => {
+            let div = document.createElement('div');
+            div.className = 'line';
+
+            // Convert timestamps in the line
+            line = convertTimestamps(line);
+
+            // Highlight log levels
+            highlightLogLevels(line, div);
+
+            // Highlight keywords
+            highlightKeywords(line, div, keywords);
+
+            div.innerHTML = line;
+            logContainer.appendChild(div);
+        });
+
+        // Add hover functionality for timestamp conversion
+        convertTimestampsOnHover();
         addTooltipHover();
     }
 
-    function applyStyles() {
-        let session = editor.session;
-
-        // Remove existing markers
-        let markers = session.getMarkers(true);
-        for (let markerId in markers) {
-            session.removeMarker(markerId);
+    function highlightLogLevels(line, div) {
+        if (line.includes('WRN')) {
+            div.classList.add('log-warning');
+        } else if (line.includes('ERR')) {
+            div.classList.add('log-error');
+        } else if (line.includes('INF')) {
+            div.classList.add('log-info');
+        } else if (line.includes('DBG')) {
+            div.classList.add('log-debug');
+        } else {
+            div.classList.add('log-default');
         }
+    }
 
-        // Define styles and patterns
-        let ranges = [
-            { regex: /WRN/g, cssClass: "log-warning" },
-            { regex: /ERR/g, cssClass: "log-error" },
-            { regex: /INF/g, cssClass: "log-info" },
-            { regex: /DBG/g, cssClass: "log-debug" }
-        ];
+    function highlightKeywords(line, div, keywords) {
+        keywords.forEach(keyword => {
+            let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
+            line = line.replace(regex, '<span class="keyword">' + keyword + '</span>');
+        });
+        div.innerHTML = line;
+    }
 
-        // Apply styles to matching patterns
-        ranges.forEach(range => {
-            let pattern = range.regex;
-            let style = `log-level ${range.cssClass}`;
-            let match;
-            while ((match = pattern.exec(session.getValue())) !== null) {
-                let startPos = match.index;
-                let endPos = match.index + match[0].length;
-                session.addMarker(new Ace.Range(0, startPos, 0, endPos), style, "text");
-            }
+    function convertTimestamps(line) {
+        let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
+        return line.replace(regex, match => {
+            return `<span class="timestamp" data-utc="${match}">${match}</span>`;
+        });
+    }
+
+    function convertTimestampsOnHover() {
+        let timestampElements = document.querySelectorAll('.timestamp');
+        timestampElements.forEach(element => {
+            element.addEventListener("mouseover", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
+                element.textContent = localTimestamp;
+            });
+
+            element.addEventListener("mouseout", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                element.textContent = utcTimestamp;
+            });
         });
     }
 
     function addTooltipHover() {
-        let keywordElements = editor.container.querySelectorAll('.line span');
+        let keywordElements = document.querySelectorAll('.keyword');
         keywordElements.forEach(element => {
             element.addEventListener('mouseover', function() {
-                let tooltipText = this.getAttribute('title');
+                let tooltipText = this.textContent;
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
@@ -90,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
-        let timestampElements = editor.container.querySelectorAll('.timestamp');
+        let timestampElements = document.querySelectorAll('.timestamp');
         timestampElements.forEach(element => {
             element.addEventListener("mouseover", function() {
                 let utcTimestamp = element.getAttribute("data-utc");
@@ -106,22 +178,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function showTooltip(text) {
-        let tooltip = document.createElement("div");
-        tooltip.className = "tooltip";
+        let tooltip = document.getElementById('tooltip');
         tooltip.textContent = text;
-        document.body.appendChild(tooltip);
-
-        document.addEventListener("mousemove", function(event) {
-            tooltip.style.left = event.pageX + 10 + 'px';
-            tooltip.style.top = event.pageY + 10 + 'px';
-        });
+        tooltip.style.display = 'block';
     }
 
     function hideTooltip() {
-        let tooltip = document.querySelector(".tooltip");
-        if (tooltip) {
-            tooltip.remove();
-        }
+        let tooltip = document.getElementById('tooltip');
+        tooltip.style.display = 'none';
     }
 
     function filterLogs(searchTerm) {
@@ -135,5 +199,3 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
-
-
