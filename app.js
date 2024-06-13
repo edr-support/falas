@@ -1,29 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetching keywords.json and initializing log analyzer
+    let tabsContainer = document.getElementById('tabs');
+    let logsContainer = document.getElementById('logs-container');
+
     fetch('keywords.json')
         .then(response => response.json())
         .then(keywords => {
             initializeLogAnalyzer(keywords);
         });
 
-    // Adding event listener for search input
     document.getElementById('search').addEventListener('input', function() {
         let searchTerm = this.value.toLowerCase();
         filterLogs(searchTerm);
-    });
-
-    // Adding event listener for file upload
-    document.getElementById('file-upload').addEventListener('change', function(event) {
-        let files = event.target.files;
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
-            let reader = new FileReader();
-            reader.onload = function(event) {
-                let logText = event.target.result;
-                createTab(file.name, logText);
-            };
-            reader.readAsText(file);
-        }
     });
 
     function initializeLogAnalyzer(keywords) {
