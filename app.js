@@ -93,15 +93,14 @@ document.addEventListener('DOMContentLoaded', function() {
             highlightLogLevels(line, div);
 
             // Highlight keywords and add tooltips
-            line = highlightKeywords(line, div, keywords);
+            div.innerHTML = highlightKeywords(line, keywords);
 
-            div.innerHTML = line; // Set the innerHTML with the processed line
             logContainer.appendChild(div);
         });
 
         // Add hover functionality for timestamp conversion
         convertTimestampsOnHover();
-        addKeywordTooltips();
+        addKeywordTooltips(logContainer);
     }
 
     function highlightLogLevels(line, div) {
@@ -118,13 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function highlightKeywords(line, div, keywords) {
-        let highlightedLine = line;
+    function highlightKeywords(line, keywords) {
         keywords.forEach(keyword => {
-            let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
-            highlightedLine = highlightedLine.replace(regex, `<span class="keyword" title="${keyword}">${keyword}</span>`);
+            let regex = new RegExp('\\b' + keyword.key + '\\b', 'gi');
+            line = line.replace(regex, `<span class="keyword" title="${keyword.message}">${keyword.key}</span>`);
         });
-        return highlightedLine;
+        return line;
     }
 
     function convertTimestamps(line) {
@@ -150,18 +148,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addKeywordTooltips() {
-        let keywordElements = document.querySelectorAll('.keyword');
-        keywordElements.forEach(element => {
-            element.addEventListener('mouseover', function() {
-                let tooltipText = this.getAttribute('title');
+    function addKeywordTooltips(logContainer) {
+        logContainer.addEventListener('mouseover', function(event) {
+            let target = event.target;
+            if (target && target.classList.contains('keyword')) {
+                let tooltipText = target.getAttribute('title');
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
-            });
-            element.addEventListener('mouseout', function() {
-                hideTooltip();
-            });
+            }
+        });
+
+        logContainer.addEventListener('mouseout', function() {
+            hideTooltip();
         });
     }
 
