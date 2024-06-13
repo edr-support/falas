@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
         content = content.replace(regex, match => {
             let localTimestamp = new Date(match.replace(" UTC", "Z")).toLocaleString();
-            return `<span class="timestamp" data-utc="${match}">${localTimestamp}</span>`;
+            return `[${localTimestamp}]`;
         });
         editor.session.setValue(content);
     }
