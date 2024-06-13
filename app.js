@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/text");
+    editor.session.setMode("ace/mode/html");
 
     document.getElementById("file-upload").addEventListener("change", function(event) {
         let files = event.target.files;
