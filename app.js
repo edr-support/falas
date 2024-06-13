@@ -92,14 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
             highlightLogLevels(line, div);
 
             // Highlight keywords
-            highlightKeywords(line, div, keywords);
+            line = highlightKeywords(line, div, keywords);
 
             div.innerHTML = line;
             logContainer.appendChild(div);
         });
 
-        // Add hover functionality for timestamp conversion
-        convertTimestampsOnHover();
+        // Add hover functionality for tooltips on keywords
         addTooltipHover();
     }
 
@@ -120,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function highlightKeywords(line, div, keywords) {
         keywords.forEach(keyword => {
             let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
-            line = line.replace(regex, '<span class="keyword">' + keyword + '</span>');
+            line = line.replace(regex, '<span class="keyword" title="' + keyword + '">' + keyword + '</span>');
         });
-        div.innerHTML = line;
+        return line;
     }
 
     function convertTimestamps(line) {
@@ -132,47 +131,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function convertTimestampsOnHover() {
-        let timestampElements = document.querySelectorAll('.timestamp');
-        timestampElements.forEach(element => {
-            element.addEventListener("mouseover", function() {
-                let utcTimestamp = element.getAttribute("data-utc");
-                let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
-                element.textContent = localTimestamp;
-            });
-
-            element.addEventListener("mouseout", function() {
-                let utcTimestamp = element.getAttribute("data-utc");
-                element.textContent = utcTimestamp;
-            });
-        });
-    }
-
     function addTooltipHover() {
         let keywordElements = document.querySelectorAll('.keyword');
         keywordElements.forEach(element => {
+            let tooltipText = element.getAttribute('title');
             element.addEventListener('mouseover', function() {
-                let tooltipText = this.textContent;
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
             });
             element.addEventListener('mouseout', function() {
                 hideTooltip();
-            });
-        });
-
-        let timestampElements = document.querySelectorAll('.timestamp');
-        timestampElements.forEach(element => {
-            element.addEventListener("mouseover", function() {
-                let utcTimestamp = element.getAttribute("data-utc");
-                let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
-                element.textContent = localTimestamp;
-            });
-
-            element.addEventListener("mouseout", function() {
-                let utcTimestamp = element.getAttribute("data-utc");
-                element.textContent = utcTimestamp;
             });
         });
     }
@@ -199,3 +168,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
