@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     let tabsContainer = document.getElementById('tabs');
     let logsContainer = document.getElementById('logs-container');
-    let searchInput = document.getElementById('search');
 
     fetch('keywords.json')
         .then(response => response.json())
@@ -9,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeLogAnalyzer(keywords);
         });
 
-    searchInput.addEventListener('input', function() {
+    document.getElementById('search').addEventListener('input', function() {
         let searchTerm = this.value.toLowerCase();
         filterLogs(searchTerm);
     });
@@ -92,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Highlight log levels
             highlightLogLevels(line, div);
 
-            // Highlight keywords and add tooltips
-            line = highlightKeywords(line, div, keywords);
+            // Highlight keywords
+            highlightKeywords(line, div, keywords);
 
             div.innerHTML = line;
             logContainer.appendChild(div);
@@ -101,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add hover functionality for timestamp conversion
         convertTimestampsOnHover();
-        addKeywordTooltips();
+        addTooltipHover();
     }
 
     function highlightLogLevels(line, div) {
@@ -121,9 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function highlightKeywords(line, div, keywords) {
         keywords.forEach(keyword => {
             let regex = new RegExp('\\b' + keyword + '\\b', 'gi');
-            line = line.replace(regex, `<span class="keyword" title="${keyword}">${keyword}</span>`);
+            line = line.replace(regex, '<span class="keyword">' + keyword + '</span>');
         });
-        return line;
+        div.innerHTML = line;
     }
 
     function convertTimestamps(line) {
@@ -149,17 +148,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addKeywordTooltips() {
+    function addTooltipHover() {
         let keywordElements = document.querySelectorAll('.keyword');
         keywordElements.forEach(element => {
             element.addEventListener('mouseover', function() {
-                let tooltipText = this.getAttribute('title');
+                let tooltipText = this.textContent;
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
             });
             element.addEventListener('mouseout', function() {
                 hideTooltip();
+            });
+        });
+
+        let timestampElements = document.querySelectorAll('.timestamp');
+        timestampElements.forEach(element => {
+            element.addEventListener("mouseover", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
+                element.textContent = localTimestamp;
+            });
+
+            element.addEventListener("mouseout", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                element.textContent = utcTimestamp;
             });
         });
     }
