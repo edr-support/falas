@@ -1,22 +1,64 @@
-.tab {
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.upload-container {
+    display: flex;
+    align-items: center;
+}
+
+.upload-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
     display: inline-block;
-    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
     cursor: pointer;
+}
+
+#search {
+    padding: 8px;
+    font-size: 16px;
     border: 1px solid #ccc;
-    background-color: #f0f0f0;
-    margin-right: 5px;
+    border-radius: 4px;
+    width: 300px;
 }
 
-.tab.active {
-    background-color: #ccc;
-}
-
-.logs-container {
-    margin-top: 10px;
+#tabs, #logs-container {
+    margin-top: 20px;
 }
 
 .line {
-    margin-bottom: 5px;
+    padding: 5px 0;
 }
 
 .log-warning {
@@ -35,16 +77,16 @@
     color: green;
 }
 
-.timestamp {
-    color: gray;
+.log-default {
+    color: black;
 }
 
 .tooltip {
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
+    position: fixed;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
     display: none;
-    z-index: 9999;
+    z-index: 2000;
 }

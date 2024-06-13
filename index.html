@@ -3,15 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Analyzer with Tabs</title>
+    <title>Log Analyzer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <input type="file" id="file-upload" multiple>
-    <input type="text" id="search" placeholder="Search logs...">
-    <div id="tabs"></div>
-    <div class="logs-container" id="logs-container"></div>
-    <div class="tooltip" id="tooltip"></div>
+    <header id="header">
+        <div class="container">
+            <h1>Log Analyzer</h1>
+            <div class="upload-container">
+                <label for="file-upload" class="upload-btn">Upload Logs</label>
+                <input type="file" id="file-upload" multiple accept=".txt,.log">
+            </div>
+            <input type="text" id="search" placeholder="Search logs...">
+        </div>
+    </header>
+
+    <div id="tabs" class="container"></div>
+    <div id="logs-container" class="container"></div>
+
+    <div id="tooltip" class="tooltip"></div>
+
     <script src="app.js"></script>
 </body>
 </html>
+
