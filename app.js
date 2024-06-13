@@ -42,28 +42,38 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
 
         editor.session.setValue(logText);
-        convertTimestamps();
-        highlightLogLevels();
+        applyStyles();
         addTooltipHover();
     }
 
-    function highlightLogLevels() {
-        let content = editor.session.getValue();
-        content = content.replace(/WRN/g, '<span class="log-warning">WRN</span>')
-                         .replace(/ERR/g, '<span class="log-error">ERR</span>')
-                         .replace(/INF/g, '<span class="log-info">INF</span>')
-                         .replace(/DBG/g, '<span class="log-debug">DBG</span>');
-        editor.session.setValue(content);
-    }
+    function applyStyles() {
+        let session = editor.session;
 
-    function convertTimestamps() {
-        let content = editor.session.getValue();
-        let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
-        content = content.replace(regex, match => {
-            let localTimestamp = new Date(match.replace(" UTC", "Z")).toLocaleString();
-            return `[${localTimestamp}]`;
+        // Remove existing markers
+        session.clearAnnotations();
+        session.getMarkers(true).forEach(marker => {
+            session.removeMarker(marker.id);
         });
-        editor.session.setValue(content);
+
+        // Define styles and patterns
+        let ranges = [
+            { regex: /WRN/g, cssClass: "log-warning" },
+            { regex: /ERR/g, cssClass: "log-error" },
+            { regex: /INF/g, cssClass: "log-info" },
+            { regex: /DBG/g, cssClass: "log-debug" }
+        ];
+
+        // Apply styles to matching patterns
+        ranges.forEach(range => {
+            let pattern = range.regex;
+            let style = `log-level ${range.cssClass}`;
+            let match;
+            while ((match = pattern.exec(session.getValue())) !== null) {
+                let startPos = match.index;
+                let endPos = match.index + match[0].length;
+                session.addMarker(new Range(0, startPos, 0, endPos), style, "text");
+            }
+        });
     }
 
     function addTooltipHover() {
