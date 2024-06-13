@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     let tabsContainer = document.getElementById('tabs');
     let logsContainer = document.getElementById('logs-container');
+    let searchInput = document.getElementById('search');
 
     fetch('keywords.json')
         .then(response => response.json())
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeLogAnalyzer(keywords);
         });
 
-    document.getElementById('search').addEventListener('input', function() {
+    searchInput.addEventListener('input', function() {
         let searchTerm = this.value.toLowerCase();
         filterLogs(searchTerm);
     });
@@ -92,14 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
             highlightLogLevels(line, div);
 
             // Highlight keywords
-            line = highlightKeywords(line, div, keywords);
+            highlightKeywords(line, div, keywords);
 
             div.innerHTML = line;
             logContainer.appendChild(div);
         });
 
-        // Add hover functionality for tooltips on keywords
-        addTooltipHover();
+        // Add hover functionality for timestamp conversion
+        convertTimestampsOnHover();
+        addKeywordTooltips();
     }
 
     function highlightLogLevels(line, div) {
@@ -123,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         div.innerHTML = line;
     }
-    
+
     function convertTimestamps(line) {
         let regex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC/g;
         return line.replace(regex, match => {
@@ -131,11 +133,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addTooltipHover() {
+    function convertTimestampsOnHover() {
+        let timestampElements = document.querySelectorAll('.timestamp');
+        timestampElements.forEach(element => {
+            element.addEventListener("mouseover", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                let localTimestamp = new Date(utcTimestamp.replace(" UTC", "Z")).toLocaleString();
+                element.textContent = localTimestamp;
+            });
+
+            element.addEventListener("mouseout", function() {
+                let utcTimestamp = element.getAttribute("data-utc");
+                element.textContent = utcTimestamp;
+            });
+        });
+    }
+
+    function addKeywordTooltips() {
         let keywordElements = document.querySelectorAll('.keyword');
         keywordElements.forEach(element => {
-            let tooltipText = element.getAttribute('title');
             element.addEventListener('mouseover', function() {
+                let tooltipText = this.textContent;
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
@@ -168,4 +186,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
