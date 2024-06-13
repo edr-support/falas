@@ -149,11 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addKeywordTooltips() {
-        let keywordElements = document.querySelectorAll('.keyword');
+    function addTooltipHover() {
+        let keywordElements = document.querySelectorAll('.line span');
         keywordElements.forEach(element => {
             element.addEventListener('mouseover', function() {
-                let tooltipText = this.textContent;
+                let tooltipText = this.getAttribute('title');
                 if (tooltipText) {
                     showTooltip(tooltipText);
                 }
@@ -163,18 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    function showTooltip(text) {
-        let tooltip = document.getElementById('tooltip');
-        tooltip.textContent = text;
-        tooltip.style.display = 'block';
-    }
-
-    function hideTooltip() {
-        let tooltip = document.getElementById('tooltip');
-        tooltip.style.display = 'none';
-    }
-
+    
     function filterLogs(searchTerm) {
         let logLines = document.getElementsByClassName('line');
         for (let line of logLines) {
