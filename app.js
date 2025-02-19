@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         filterLogs(searchTerm);
     });
 
+    document.getElementById('exclude').addEventListener('input', function() {
+        let excludeTerm = this.value.toLowerCase();
+        updateDisplayedLogs(excludeTerm);
+    });
+
     function initializeLogAnalyzer(keywords) {
         document.getElementById("file-upload").addEventListener("change", function(event) {
             let files = event.target.files;
@@ -77,11 +82,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayLogs(logText, containerId, keywords) {
+        let excludeTerm = document.getElementById('exclude').value.toLowerCase();
         let logLines = logText.split('\n');
         let logContainer = document.getElementById(containerId);
         logContainer.innerHTML = '';
 
         logLines.forEach(line => {
+            if (excludeTerm && line.toLowerCase().includes(excludeTerm)) {
+                return; // Skip this line if it contains the excluded term
+            }
+
             let div = document.createElement('div');
             div.className = 'line';
 
@@ -101,6 +111,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add hover functionality for timestamp conversion
         convertTimestampsOnHover();
         addTooltipHover();
+    }
+
+    function updateDisplayedLogs(excludeTerm) {
+        let allLogContainers = logsContainer.querySelectorAll(".logs");
+        allLogContainers.forEach(logContainer => {
+            let logLines = logContainer.querySelectorAll('.line');
+            logLines.forEach(line => {
+                if (excludeTerm && line.textContent.toLowerCase().includes(excludeTerm)) {
+                    line.style.display = 'none';
+                } else {
+                    line.style.display = 'block';
+                }
+            });
+        });
     }
 
     function highlightLogLevels(line, div) {
@@ -186,16 +210,5 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideTooltip() {
         let tooltip = document.getElementById('tooltip');
         tooltip.style.display = 'none';
-    }
-
-    function filterLogs(searchTerm) {
-        let logLines = document.getElementsByClassName('line');
-        for (let line of logLines) {
-            if (line.textContent.toLowerCase().includes(searchTerm)) {
-                line.style.display = 'block';
-            } else {
-                line.style.display = 'none';
-            }
-        }
     }
 });
